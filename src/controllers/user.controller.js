@@ -8,6 +8,27 @@ dotenv.config();
 
 const { TOKEN } = process.env;
 
+// GET ALL USERS IN THE SYSTEM
+exports.fetchUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    Response(res).success({ users }, 200);
+  } catch (error) {
+    Response(res).error(error.message, error.code);
+  }
+};
+
+// GET ALL USER DETAILS ALONE WITH USER WALLET AND TRANSACTION HISTORY
+exports.userWalletDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userWalletDetails = await User.find({ _id: id }).populate("wallet");
+    Response(res).success({ userWalletDetails }, 200);
+  } catch (error) {
+    Response(res).error(error.message, error.code);
+  }
+};
+
 exports.register = async (req, res) => {
   try {
     const { firstname, lastname, email, password } = req.body;
@@ -30,8 +51,8 @@ exports.register = async (req, res) => {
       TOKEN,
       { expiresIn: "2h" }
     );
-    user.token = token;
-    Response(res).success({ newUser }, 201);
+    newUser.token = token;
+    Response(res).success({ newUser, token }, 201);
   } catch (error) {
     console.log(error);
     Response(res).error(error.message, error.code);
@@ -56,11 +77,12 @@ exports.login = async (req, res) => {
         TOKEN,
         { expiresIn: "2h" }
       );
-      user.token = token;
-      Response(res).success({ existingUser }, 200);
+      existingUser.token = token;
+      return Response(res).success({ existingUser, token }, 200);
     }
     throw Error("Invalid Credentials", "BAD REQUEST", 401);
   } catch (error) {
+    console.log(error);
     Response(res).error(error.message, error.code);
   }
 };
