@@ -1,15 +1,39 @@
 const express = require("express");
+const morgan = require("morgan");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 dotenv.config();
 
 const app = express();
 
-const { PORT } = process.env;
+app.use(express.json());
+app.use(morgan("dev"));
+
+// user routes
+const userRoute_VersionOne = require("./routes/index");
+
+const { PORT, DB_USERNAME, DB_PASSWORD } = process.env;
 
 app.get("/", (req, res) => {
   res.send("The main entry application");
 });
 
-app.listen(PORT, (req, res) => {
+app.use("/api", userRoute_VersionOne);
+
+app.listen(PORT, async (req, res) => {
+  try {
+    await mongoose.connect(
+      `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@cluster0.iij5r.mongodb.net/userWalletApp`,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
+    console.log("Database is connected");
+  } catch (error) {
+    console.log(`Database Not Connected`);
+  }
   console.log(`The app is running on PORT ${PORT}`);
 });
+
+module.exports = app;
