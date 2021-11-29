@@ -4,6 +4,20 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const path = require("path");
 const axios = require("axios");
+// const { createClient } = require("redis");
+
+// (async () => {
+//   const client = createClient();
+
+//   client.on("error", (err) => console.log("Redis Client Error", err));
+
+//   await client.connect();
+
+//   await client.set("key", "value");
+//   const value = await client.get("key");
+//   console.log(value);
+// })();
+
 dotenv.config();
 
 const app = express();

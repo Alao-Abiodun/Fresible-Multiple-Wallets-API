@@ -8,7 +8,7 @@ const walletSchema = new Schema(
       type: Number,
       required: [true, "Please enter the monthly interest rate"],
     },
-    owner: { type: Schema.Types.ObjectId, required: true, ref: "Users" },
+    owner: { type: Schema.Types.ObjectId, required: true, ref: "User" },
     transactionHistory: {
       type: Schema.Types.ObjectId,
       ref: "WalletTransaction",

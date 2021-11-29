@@ -1,29 +1,47 @@
 const User = require("../models/user.model");
 const Response = require("../lib/response");
+// const client = require("../middleware/redis");
 const Error = require("../lib/error");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const redis = require("redis");
+
 dotenv.config();
+
+const client = redis.createClient({ port: 6379 });
+client.on("error", (error) => console.error(error));
 
 const { TOKEN } = process.env;
 
 // GET ALL USERS IN THE SYSTEM
 exports.fetchUsers = async (req, res) => {
   try {
+    //   let userList = await client.get("users");
+    //   if (userList) {
+    //     Response(res).success({ data: JSON.parse(userList) }, 200, {
+    //       meta_data: "from cache",
+    //     });
+    //   } else {
+    //     const users = await User.find({});
+    //     client.set("users", JSON.stringify(users));
+    //     Response(res).success({ users }, 200, { meta_data: "from server" });
+    //   }
+
     const users = await User.find({});
     Response(res).success({ users }, 200);
   } catch (error) {
+    console.log(error);
     Response(res).error(error.message, error.code);
   }
 };
 
-// GET ALL USER DETAILS ALONE WITH USER WALLET AND TRANSACTION HISTORY
-exports.userWalletDetails = async (req, res) => {
+// GET THE COUNT OF USERS
+exports.userCount = async (req, res) => {
   try {
-    const { id } = req.params;
-    const userWalletDetails = await User.find({ _id: id }).populate("wallet");
-    Response(res).success({ userWalletDetails }, 200);
+    const userCount = await User.countDocuments({});
+    // let userCount = await client.get("");
+    Response(res).success({ userCount }, 200);
   } catch (error) {
     Response(res).error(error.message, error.code);
   }

@@ -3,6 +3,7 @@ function Response(res) {
     return res.status(statusCode).json({
       success: true,
       payload,
+      message,
     });
   };
 

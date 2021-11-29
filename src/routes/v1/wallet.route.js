@@ -8,9 +8,15 @@ const {
   createTransaction,
   updateWallet,
   fetchWallets,
+  userWalletDetails,
+  numberOfWallets,
+  totalBalanceWallet,
 } = require("../../controllers/wallet.controller");
 
 router.get("/fetchAll", fetchWallets);
+router.get("/userWalletDetail", userWalletDetails);
+router.get("/walletAvailable", numberOfWallets);
+router.get("/totalBalanceWallet", totalBalanceWallet);
 
 router.post("/create", validateUserToken, createWallet);
 router.post("/walletTransaction", createWalletTransaction);

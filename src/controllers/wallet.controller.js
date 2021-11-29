@@ -4,6 +4,8 @@ const Transaction = require("../models/transactions.model");
 const Response = require("../lib/response");
 const Error = require("../lib/error");
 
+exports.sendMoney = async (req, res) => {};
+
 exports.createWallet = async (req, res) => {
   try {
     const { _id } = req.decoded;
@@ -28,6 +30,54 @@ exports.createWallet = async (req, res) => {
     Response(res).success({ userWallet }, 200);
   } catch (error) {
     console.log(error);
+    Response(res).error(error.message, error.code);
+  }
+};
+
+// GET ALL USER DETAILS ALONE WITH USER WALLET AND TRANSACTION HISTORY
+exports.userWalletDetails = async (req, res) => {
+  try {
+    const { name } = req.query;
+    const userWalletDetails = await Wallet.find({ name }).populate("owner");
+    Response(res).success({ userWalletDetails }, 200);
+  } catch (error) {
+    console.log(error);
+    Response(res).error(error.message, error.code);
+  }
+};
+
+exports.numberOfWallets = async (req, res) => {
+  try {
+    const numberOfWallets = await Wallet.countDocuments({});
+    Response(res).success({ numberOfWallets }, 200);
+  } catch (error) {
+    Response(res).error(error.message, error.code);
+  }
+};
+
+exports.totalBalanceWallet = async (req, res) => {
+  try {
+    const overallWalletBalance = await Wallet.aggregate([
+      {
+        $group: {
+          _id: { day: { $dayOfYear: "$createdAt" } },
+          totalWalletBalance: {
+            $sum: { $multiply: ["min_balance", "monthly_interest_rate"] },
+          },
+        },
+      },
+    ]);
+    console.log(overallWalletBalance);
+    // Response(res).success({ overallWalletBalance }, 200);
+  } catch (error) {
+    console.log(error);
+    Response(res).error(error.message, error.code);
+  }
+};
+
+exports.totalVolumeTransactions = async (req, res) => {
+  try {
+  } catch (error) {
     Response(res).error(error.message, error.code);
   }
 };
